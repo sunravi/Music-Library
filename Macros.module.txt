@@ -55,32 +55,47 @@ Sub Add_Files()
 Dim selecteditems As FileDialogSelectedItems 'starting from 1
 Dim rst As Recordset
 Dim i As Long
-    
+Dim strSQL As String
+Dim qdf As QueryDef
+
 Set selecteditems = pick_files_Folder("Select Files to add to Music Catalog", msoFileDialogFilePicker)
 'add selected files to wmusic_files table and call get mediainfo
 
+
+'if these columns are not text change to approriate type
+strSQL = "PARAMETERS [FileToCheck] Text(255); "
+
+strSQL = strSQL & "SELECT Count(*) FROM Wmusic_Files " _
+                & "WHERE path = [fileToCheck];"
+
+Set qdf = CurrentDb.CreateQueryDef("", strSQL)
 Set rst = CurrentDb.OpenRecordset("wMusic_Files")
-rst.Index = "PrimaryKey"
+'If rst.RecordCount > 0 Then
+'rst.Index = "PrimaryKey"
+'End If
 With rst
 If selecteditems.Count > 0 Then
 
     For i = 1 To selecteditems.Count
-        .Seek "=", selecteditems.Item(i)
+        qdf("FileToCheck") = selecteditems.Item(i)
+        '.FindNext "Path = """ & selecteditems.Item(i) & """"
         ' After this powershell sccript will be
         'called to get the mediatag information
         '
-        If .NoMatch Then
+        If qdf.OpenRecordset(dbOpenSnapshot)(0) = 0 Then
             .AddNew
             !Path = selecteditems.Item(i)
             .update
        End If
     
     Next i
+    Macros.process_mediainfo "Wmusic_files", "wMusic_files", False
+    update_music_catalog
 End If
 End With
+Set qdf = Nothing
+Set rst = Nothing
 ' call extract mediainfo
-Macros.process_mediainfo "Wmusic_files", "wMusic_files", False
-update_music_catalog
 End Sub
 
 Sub process_mediainfo(strinobj As String, stroutobj As String, update As Boolean)
