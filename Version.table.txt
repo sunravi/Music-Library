@@ -24,12 +24,24 @@
 </xsd:restriction>
 </xsd:simpleType>
 </xsd:element>
-<xsd:element name="Major" minOccurs="0" od:jetType="integer" od:sqlSType="smallint" type="xsd:short"/>
-<xsd:element name="Minor" minOccurs="0" od:jetType="integer" od:sqlSType="smallint" type="xsd:short"/>
+<xsd:element name="Version" minOccurs="0" od:jetType="text" od:sqlSType="nvarchar">
+<xsd:simpleType>
+<xsd:restriction base="xsd:string">
+<xsd:maxLength value="10"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:element>
 <xsd:element name="Status" minOccurs="1" od:jetType="text" od:sqlSType="nvarchar" od:nonNullable="yes">
 <xsd:simpleType>
 <xsd:restriction base="xsd:string">
 <xsd:maxLength value="10"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:element>
+<xsd:element name="Comment" minOccurs="0" od:jetType="memo" od:sqlSType="ntext">
+<xsd:simpleType>
+<xsd:restriction base="xsd:string">
+<xsd:maxLength value="536870910"/>
 </xsd:restriction>
 </xsd:simpleType>
 </xsd:element>

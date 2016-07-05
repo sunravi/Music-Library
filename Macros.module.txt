@@ -12,7 +12,20 @@ Dim arr() As counter
 Dim dct As Dictionary
 
 Option Explicit
+Function relinktables() As Boolean
+Dim connectstring As String
+Dim tdf As TableDef
+connectstring = ";database=" & CurrentProject.FullName
+connectstring = Replace(connectstring, ".accdb", "_be.accdb")
+For Each tdf In CurrentDb.TableDefs
+    If Len(tdf.Connect) > 0 Then
+        'It's a linked table, so re-link:
+        tdf.Connect = connectstring
+        tdf.RefreshLink
+    End If
+Next tdf
 
+End Function
 'Function Get_Files()
 'Dim objfile As New ClsFileUtils
 'objfile.go
